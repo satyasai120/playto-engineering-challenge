@@ -4,6 +4,7 @@ from .views import (
     PostDetailView,
     CreateCommentView,
     LikePostView,
+    CommentCreateView,
     LeaderboardView,
 )
 
@@ -22,4 +23,30 @@ urlpatterns = [
 
     # Leaderboard
     path("leaderboard/", LeaderboardView.as_view(), name="leaderboard"),
+]
+
+from django.urls import path
+from .views import PostListCreateView
+
+urlpatterns = [
+    path('posts/', PostListCreateView.as_view()),
+]
+
+from django.urls import path
+from .views import PostListCreateView, CommentCreateView
+from . import views
+
+urlpatterns = [
+    path('posts/', PostListCreateView.as_view()),
+    path('comments/', CommentCreateView.as_view()),
+    path("leaderboard/", views.LeaderboardView.as_view()),
+]
+
+from django.contrib import admin
+from django.urls import path
+from feed.views import home
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('', home, name='home'),   
 ]

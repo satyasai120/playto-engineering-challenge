@@ -99,3 +99,48 @@ class LeaderboardView(APIView):
         top5 = sorted(scores.items(), key=lambda x: x[1], reverse=True)[:5]
 
         return Response(top5)
+    
+
+from rest_framework import generics
+from .models import Post
+from .serializers import PostSerializer
+
+class PostListCreateView(generics.ListCreateAPIView):
+    queryset = Post.objects.all().prefetch_related("comments__children")
+    serializer_class = PostSerializer
+
+
+
+from rest_framework import generics
+from .models import Comment
+from .serializers import CommentSerializer
+
+class CommentCreateView(generics.CreateAPIView):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+
+
+class CommentCreateView(generics.CreateAPIView):
+    serializer_class = CommentSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
+
+from django.db.models import Count
+
+class LeaderboardView(APIView):
+    def get(self, request):
+        leaderboard = (
+            Post.objects
+            .values("user__id", "user__username")
+            .annotate(post_count=Count("id"))
+            .order_by("-post_count")
+        )
+
+        return Response(leaderboard)
+    
+
+from django.http import HttpResponse
+
+def home(request):
+    return HttpResponse("Hello, Home Page Works!")

@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: playto-backend
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn playto.wsgi:application
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: playto.settings
